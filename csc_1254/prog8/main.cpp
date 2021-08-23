@@ -210,11 +210,11 @@ int main(int argc, char** argv)
 					
 					/* evaluate operand1 token operand2 */
 					VBI result;
-					if(token == "+")
+					if (token == "+")
 						result = *operand1 + *operand2;
-					else if(token == "-")
+					else if (token == "-")
 						result = *operand1 - *operand2;
-					else if(token == "*")
+					else if (token == "*")
 						result = *operand1 * *operand2;
 					else if(token == "/")
 						result = *operand1 / *operand2;

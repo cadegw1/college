@@ -26,14 +26,14 @@ class Stack
     
     public:
         // Constructor for Stack class
-        Stack()
+        Stack<T>()
         {
             size = 0;
             topNode = NULL;
         }
 
         // Destructor for the Stack class
-        ~Stack()
+        ~Stack<T>()
         {
             while(topNode != NULL)
             {
@@ -48,13 +48,16 @@ class Stack
 
         // Returns true if there is an item in the list and decrements size, returns 
         // false if the list is empty
-        bool pop();
+        T pop();
 
         // Returns true if the stack is empty
         bool isEmpty();
 
+        // Returns the amount of items on the stack
+        int getLength();
+
         // If the list is not empty return the value of the item on top, else return NULL
-        T *top();
+        T top();
 };
 
 template <class T>
@@ -68,19 +71,18 @@ void Stack<T>::push(T nI)
 }
 
 template <class T>
-bool Stack<T>::pop()
+T Stack<T>::pop()
 {
     if(size == 0)
     {
-        return false;
+        return NULL;
     }
     else
     {
         size--;
         Node * temp = topNode;
         topNode = topNode->nextNode;
-        delete temp;
-        return true;
+        return temp->value;
     }
 }
 
@@ -98,7 +100,13 @@ bool Stack<T>::isEmpty()
 }
 
 template <class T>
-T *Stack<T>::top()
+int Stack<T>::getLength()
+{
+    return size;
+}
+
+template <class T>
+T Stack<T>::top()
 {
     if(size == 0)
     {
@@ -106,7 +114,7 @@ T *Stack<T>::top()
     }
     else
     {
-        return &topNode->value;
+        return topNode->value;
     }
 }
 
