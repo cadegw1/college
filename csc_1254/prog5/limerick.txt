@@ -1,0 +1,15 @@
+14
+let A = 12
+let B = 2
+let C = 20
+let D = 3
+let E = 0
+let F = 10
+let G = 5
+let H = 11
+calc I = ( A + A ^ B + C + D * B ) / ( F - D ) + G * H - E ;
+print I
+let J = 150
+let K = -100
+root J
+root K

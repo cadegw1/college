@@ -1,0 +1,35 @@
+Customer 1001 entered the bank at time 3
+Customer 1001 began with teller0 at time 3 after a wait of 0
+Customer 1001 finished with teller0 at time 7
+Customer 1002 entered the bank at time 9
+Customer 1002 began with teller0 at time 9 after a wait of 0
+Customer 1003 entered the bank at time 11
+Customer 1003 began with teller1 at time 11 after a wait of 0
+Customer 1004 entered the bank at time 16
+Customer 1005 entered the bank at time 24
+Customer 1006 entered the bank at time 40
+Customer 1002 finished with teller0 at time 40
+Customer 1004 began with teller0 at time 40 after a wait of 24
+Customer 1007 entered the bank at time 64
+Customer 1003 finished with teller1 at time 69
+Customer 1005 began with teller1 at time 69 after a wait of 45
+Customer 1008 entered the bank at time 81
+Customer 1009 entered the bank at time 98
+Customer 1010 entered the bank at time 101
+Customer 1004 finished with teller0 at time 129
+Customer 1006 began with teller0 at time 129 after a wait of 89
+Customer 1005 finished with teller1 at time 136
+Customer 1007 began with teller1 at time 136 after a wait of 72
+Customer 1007 finished with teller1 at time 151
+Customer 1008 began with teller1 at time 151 after a wait of 70
+Customer 1006 finished with teller0 at time 175
+Customer 1009 began with teller0 at time 175 after a wait of 77
+Customer 1008 finished with teller1 at time 224
+Customer 1010 began with teller1 at time 224 after a wait of 123
+Customer 1009 finished with teller0 at time 226
+Customer 1010 finished with teller1 at time 255
+
+Total customer waiting time = 500
+Average customer waiting time = 50
+Total teller idle time = 47
+Average idle time per teller = 23.5

@@ -1,0 +1,15 @@
+0.25
+0.35
+0.4
+11
+Belwas	Strong	85	69	75	78	40	70	70	70	71
+Cassel	Beth	100	89	98	100	85	100	90	70	100
+Hardyng	Harrold	100	94	99	100	97	93	70	95	79
+Jefferson	Thomas	99	99	99	99	99	99	99	99	99
+Martell	Quentyn	100	92	99	78	97	98	83	70	88
+Penrose	Cortnay	97	73	96	95	95	97	70	90	42
+Star	Nathan	23	34	45	56	67	78	89	12	89
+Stoneheart	Lady	99	88	96	90	100	97	83	95	84
+Thetall	Dunk	45	89	98	99	87	70	100	70	67
+Waters	Aurane	100	64	40	100	100	70	70	70	30
+Williams	Cade	100	100	100	100	100	100	100	100	100

@@ -1,0 +1,17 @@
+0.25
+0.35
+0.4
+13
+Asmus	Adalberto	100	95	97	99	100	100	90	95	100
+Avenda	Bridgett	85	69	75	78	40	70	70	70	71
+Castellanos	Sophie	95	93	94	100	80	98	90	90	94
+Eshleman	Kali	100	90	96	100	90	84	90	100	92
+Gladden	Alexa	100	94	98	94	27	80	90	90	100
+Hemsley	Mandie	100	91	96	100	96	97	70	93	81
+Karp	Joi	99	84	98	95	96	95	70	70	79
+McBoatface	Boaty	40	50	60	70	40	50	60	70	60
+Mcgrory	Palmer	100	79	98	99	90	70	70	70	89
+Minarik	Mariette	100	91	98	83	96	100	70	95	44
+Rivard	Brandee	100	87	95	99	90	100	70	95	83
+Shih	Tobie	100	94	98	100	100	95	83	95	70
+Wayt	Jacque	91	61	87	95	95	70	90	70	67

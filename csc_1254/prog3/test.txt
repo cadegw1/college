@@ -1,0 +1,10 @@
+10
+10
+10
+6
+Ferris	Tyler	100	100	100	100	100	100	100	100	100
+Franklin	Benjamin	1	1	1	1	1	1	1	1	1
+Jefferson	Thomas	1	1	1	1	1	1	1	1	1
+Lincoln	Abraham	1	1	1	1	1	1	1	1	1
+Washington	George	1	1	1	1	1	1	1	1	1
+Williams	Cade	1	1	1	1	1	1	1	1	1
