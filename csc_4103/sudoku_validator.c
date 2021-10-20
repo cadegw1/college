@@ -22,7 +22,6 @@ int smat[9][9];
 // Reads input value and assigns all values to matrix smat
 void read_file(char * input_file)
 {
-    printf("%s", input_file);
     FILE *fp = fopen(input_file, "r");
 
     for(int i = 0; i < 9; i++)
@@ -113,7 +112,7 @@ void *validate_subgrid(void *ptr)
     {
         for(int j = ind_col; j < ind_col + 3; j++) // Iterate through column of subgrid
         {
-            switch(smat[i][j])
+            switch(smat[j][i])
             {
                 case 1: cell[0]++; break;
                 case 2: cell[1]++; break;
