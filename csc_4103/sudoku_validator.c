@@ -106,10 +106,11 @@ void *validate_subgrid(void *ptr)
     parameters *data = (parameters *)ptr;
     
     int cell[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-    int index = (data->subgrid % 3) * 3;
-    for(int i = index; i < index + 3; i++) // Iterate through rows of subgrid
+    int ind_row = (data->subgrid % 3) * 3;
+    int ind_col = data->subgrid < 3 ? 0 : data->subgrid < 6 ? 3 : 6;
+    for(int i = ind_row; i < ind_row + 3; i++) // Iterate through rows of subgrid
     {
-        for(int j = index; j < index + 3; j++) // Iterate through column of subgrid
+        for(int j = ind_col; j < ind_col + 3; j++) // Iterate through column of subgrid
         {
             switch(smat[i][j])
             {
@@ -143,18 +144,22 @@ int main(void)
 {
     read_file();
     pthread_t column, row, sgrid;
-    int ret[3];
-
     parameters *data = (parameters*)malloc(sizeof(parameters));
-    data->row = 0;
-    data->column = 0;
-    data->subgrid = 4;
+    
+    for(int i = 0; i < 9; i++)
+    {
+        data->row = i;
+        data->column = i;
+        data->subgrid = i;
+        pthread_create(&column, NULL, validate_column, (void *)data);
+        pthread_create(&row, NULL, validate_row, (void *)data);
+        pthread_create(&sgrid, NULL, validate_subgrid, (void *)data);
+        pthread_join(column, NULL);
+        pthread_join(row, NULL);
+        pthread_join(sgrid, NULL);
+    }
 
-    ret[0] = pthread_create(&column, NULL, validate_column, (void *)data);
-    ret[1] = pthread_create(&row, NULL, validate_row, (void *)data);
-    ret[2] = pthread_create(&sgrid, NULL, validate_subgrid, (void *)data);
-
-    pthread_exit(NULL);
+    return 0;
 }
 
 
