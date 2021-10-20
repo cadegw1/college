@@ -20,9 +20,10 @@ typedef struct
 int smat[9][9];
 
 // Reads input value and assigns all values to matrix smat
-void read_file(void)
+void read_file(char * input_file)
 {
-    FILE *fp = fopen("solution.txt", "r");
+    printf("%s", input_file);
+    FILE *fp = fopen(input_file, "r");
 
     for(int i = 0; i < 9; i++)
     {
@@ -140,9 +141,15 @@ void *validate_subgrid(void *ptr)
     pthread_exit(NULL);
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
-    read_file();
+    if(argv[1] == NULL)
+    {
+        printf("ERROR: No input file\r\n");
+        return 0;
+    }
+
+    read_file(argv[1]);
     pthread_t column, row, sgrid;
     parameters *data = (parameters*)malloc(sizeof(parameters));
     
