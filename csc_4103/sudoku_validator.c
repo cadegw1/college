@@ -61,7 +61,7 @@ void *validate_column(void *ptr)
         }
     }
 
-    printf("Thread 1, Column %d, %s\r\n", data->column, valid ? "Valid" : "Invalid");
+    printf("Thread %ld, Column %d, %s\r\n", pthread_self(), data->column, valid ? "Valid" : "Invalid");
     pthread_exit(NULL);
 }
 
@@ -96,7 +96,7 @@ void *validate_row(void *ptr)
         }
     }
 
-    printf("Thread 2, Row %d, %s\r\n", data->row, valid ? "Valid" : "Invalid");
+    printf("Thread %ld, Row %d, %s\r\n", pthread_self(), data->row, valid ? "Valid" : "Invalid");
     pthread_exit(NULL);
 }
 
@@ -136,7 +136,7 @@ void *validate_subgrid(void *ptr)
         }
     }
 
-    printf("Thread 3, Subgrid %d, %s\r\n", data->column, valid ? "Valid" : "Invalid");
+    printf("Thread %ld, Subgrid %d, %s\r\n", pthread_self(), data->column, valid ? "Valid" : "Invalid");
     pthread_exit(NULL);
 }
 
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
     }
 
     read_file(argv[1]);
-    pthread_t column, row, sgrid;
+    pthread_t column_pt, row_pt, sgrid_pt;
     parameters *data = (parameters*)malloc(sizeof(parameters));
     
     for(int i = 0; i < 9; i++)
@@ -157,12 +157,16 @@ int main(int argc, char *argv[])
         data->row = i;
         data->column = i;
         data->subgrid = i;
-        pthread_create(&column, NULL, validate_column, (void *)data);
-        pthread_create(&row, NULL, validate_row, (void *)data);
-        pthread_create(&sgrid, NULL, validate_subgrid, (void *)data);
-        pthread_join(column, NULL);
-        pthread_join(row, NULL);
-        pthread_join(sgrid, NULL);
+        
+        // Thread creation
+        pthread_create(&column_pt, NULL, validate_column, (void *)data);
+        pthread_create(&row_pt, NULL, validate_row, (void *)data);
+        pthread_create(&sgrid_pt, NULL, validate_subgrid, (void *)data);
+
+        // Syncronization technique
+        pthread_join(column_pt, NULL);
+        pthread_join(row_pt, NULL);
+        pthread_join(sgrid_pt, NULL);
     }
 
     return 0;
