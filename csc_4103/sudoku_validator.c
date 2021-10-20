@@ -13,6 +13,7 @@ typedef struct
 {
     int row;
     int column;
+    int subgrid;
 } parameters;
 
 // Initialize matrix for sudoku values
@@ -29,6 +30,7 @@ void read_file(void)
     }
 }
 
+// Prints Valid if column is valid, Else Invalid
 void *validate_column(void *ptr)
 {
     parameters *data = (parameters *)ptr;
@@ -59,7 +61,81 @@ void *validate_column(void *ptr)
         }
     }
 
-    printf("Thread 1, Column %d, %s", data->column, valid ? "Valid" : "Invalid");
+    printf("Thread 1, Column %d, %s\r\n", data->column, valid ? "Valid" : "Invalid");
+    pthread_exit(NULL);
+}
+
+// Prints Valid if row is valid, Else Invalid
+void *validate_row(void *ptr)
+{
+    parameters *data = (parameters *)ptr;
+    
+    int cell[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    for(int i = 0; i < 9; i++)
+    {
+        switch(smat[data->row][i])
+        {
+            case 1: cell[0]++; break;
+            case 2: cell[1]++; break;
+            case 3: cell[2]++; break;
+            case 4: cell[3]++; break;
+            case 5: cell[4]++; break;
+            case 6: cell[5]++; break;
+            case 7: cell[6]++; break;
+            case 8: cell[7]++; break;
+            case 9: cell[8]++; break;
+        }
+    }
+
+    bool valid = true;
+    for(int i = 0; i < 9; i++)
+    {
+        if(cell[i] != 1)
+        {
+            valid = false;
+        }
+    }
+
+    printf("Thread 2, Row %d, %s\r\n", data->row, valid ? "Valid" : "Invalid");
+    pthread_exit(NULL);
+}
+
+// Prints Valid if subgrid is valid, Else Invalid
+void *validate_subgrid(void *ptr)
+{
+    parameters *data = (parameters *)ptr;
+    
+    int cell[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    int index = (data->subgrid % 3) * 3;
+    for(int i = index; i < index + 3; i++) // Iterate through rows of subgrid
+    {
+        for(int j = index; j < index + 3; j++) // Iterate through column of subgrid
+        {
+            switch(smat[i][j])
+            {
+                case 1: cell[0]++; break;
+                case 2: cell[1]++; break;
+                case 3: cell[2]++; break;
+                case 4: cell[3]++; break;
+                case 5: cell[4]++; break;
+                case 6: cell[5]++; break;
+                case 7: cell[6]++; break;
+                case 8: cell[7]++; break;
+                case 9: cell[8]++; break;
+            }
+        }
+    }
+
+    bool valid = true;
+    for(int i = 0; i < 9; i++)
+    {
+        if(cell[i] != 1)
+        {
+            valid = false;
+        }
+    }
+
+    printf("Thread 3, Subgrid %d, %s\r\n", data->column, valid ? "Valid" : "Invalid");
     pthread_exit(NULL);
 }
 
@@ -70,10 +146,13 @@ int main(void)
     int ret[3];
 
     parameters *data = (parameters*)malloc(sizeof(parameters));
-    data->row = 1;
-    data->column = 1;
+    data->row = 0;
+    data->column = 0;
+    data->subgrid = 4;
 
     ret[0] = pthread_create(&column, NULL, validate_column, (void *)data);
+    ret[1] = pthread_create(&row, NULL, validate_row, (void *)data);
+    ret[2] = pthread_create(&sgrid, NULL, validate_subgrid, (void *)data);
 
     pthread_exit(NULL);
 }
