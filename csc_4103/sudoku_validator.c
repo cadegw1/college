@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <stdbool.h>
 
 typedef struct 
 {
@@ -28,18 +29,53 @@ void read_file(void)
     }
 }
 
+void *validate_column(void *ptr)
+{
+    parameters *data = (parameters *)ptr;
+    
+    int cell[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    for(int i = 0; i < 9; i++)
+    {
+        switch(smat[i][data->column])
+        {
+            case 1: cell[0]++; break;
+            case 2: cell[1]++; break;
+            case 3: cell[2]++; break;
+            case 4: cell[3]++; break;
+            case 5: cell[4]++; break;
+            case 6: cell[5]++; break;
+            case 7: cell[6]++; break;
+            case 8: cell[7]++; break;
+            case 9: cell[8]++; break;
+        }
+    }
+
+    bool valid = true;
+    for(int i = 0; i < 9; i++)
+    {
+        if(cell[i] != 1)
+        {
+            valid = false;
+        }
+    }
+
+    printf("Thread 1, Column %d, %s", data->column, valid ? "Valid" : "Invalid");
+    pthread_exit(NULL);
+}
+
 int main(void)
 {
     read_file();
-    pthread_t column, row;
-    pthread_t sgrid[9];
-    int ret[11];
+    pthread_t column, row, sgrid;
+    int ret[3];
 
     parameters *data = (parameters*)malloc(sizeof(parameters));
     data->row = 1;
     data->column = 1;
 
-    return 0;
+    ret[0] = pthread_create(&column, NULL, validate_column, (void *)data);
+
+    pthread_exit(NULL);
 }
 
 
