@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../aima-python/.idea/aima-python.iml" filepath="$PROJECT_DIR$/../aima-python/.idea/aima-python.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/college.iml" filepath="$PROJECT_DIR$/.idea/college.iml" />
     </modules>
   </component>
