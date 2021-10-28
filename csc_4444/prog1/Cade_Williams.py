@@ -5,13 +5,23 @@ import search as s
 
 class VacuumProblem(s.Problem):
 
-    def __init__(self, initial, goal=True):
+    def __init__(self, initial, environment, goal=False):
         super().__init__(initial, goal)
+        self.env = environment
+        self.dirty_squares = self.get_dirty_squares()
+
+    def get_dirty_squares(self):
+        dirty_square_list = []
+        for square in self.env:
+            if self.env[square] == 'Dirty':
+                dirty_square_list.append(square)
+        return dirty_square_list
 
     def actions(self, state):
         x, y = state
         possible_actions = ['Suck', 'Left', 'Right', 'Down', 'Up']
-
+        # if self.env[state] == 'Dirty':
+        #     return ['Suck']
         if x-1 < 0:
             possible_actions.remove('Left')
         if x+1 > 4:
@@ -20,7 +30,6 @@ class VacuumProblem(s.Problem):
             possible_actions.remove('Down')
         if y+1 > 4:
             possible_actions.remove('Up')
-
         return possible_actions
 
     def result(self, state, action):
@@ -34,51 +43,80 @@ class VacuumProblem(s.Problem):
         elif action == "Up":
             y += 1
         elif action == "Suck":
-            # TODO: add something here
-            pass
+            self.env[(x, y)] = 'Clean'
+            self.dirty_squares = self.get_dirty_squares()
         return x, y
 
-    def goal_test(self, state):
-        is_goal = True
-        for square in state:
-            if state[square] == 'Dirty':
-                is_goal = False
-        return is_goal
-        return state == self.goal
+    def goal_test(self, environment):
+        self.dirty_squares = self.get_dirty_squares()
+        return not self.dirty_squares
 
-    def h(self, node):
-        return 9
+    # def path_cost(self, c, state1, action, state2):
+    #     if action == 'Suck':
+    #         c += 1 + ((len(self.dirty_squares) - 1) * 2)
+    #     elif action in ['Left', 'Right', 'Down', 'Up']:
+    #         c += 1 + (len(self.dirty_squares) * 2)
+    #     return c
+
+    def h1(self, node):
+        x1, y1 = node.state
+        first = True
+        heuristic = 0
+        for square in self.dirty_squares:
+            x2, y2 = square
+            new_heuristic = abs((x1 - x2)) + abs((y1 - y2))
+            if first:
+                heuristic = new_heuristic
+                first = False
+            elif heuristic > new_heuristic:
+                heuristic = new_heuristic
+        return heuristic + len(self.dirty_squares)
+
+    def h2(self, node):
+        x1, y1 = node.state
+        first = True
+        heuristic = 0
+        for square in self.dirty_squares:
+            x2, y2 = square
+            new_heuristic = abs((x1 - x2)) + abs((y1 - y2))
+            if first:
+                heuristic = new_heuristic
+                first = False
+            elif heuristic < new_heuristic:
+                heuristic = new_heuristic
+        return heuristic + len(self.dirty_squares)
 
 
 if __name__ == '__main__':
     """Initializing the environment with a dictionary
     ex: (x, y): 'Status of square'"""
-    env = {(0, 4): 'Dirty', (1, 4): 'Dirty', (2, 4): 'Dirty', (3, 4): 'Dirty', (4, 4): 'Dirty',
-           (0, 3): 'Clean', (1, 3): 'Clean', (2, 3): 'Clean', (3, 3): 'Clean', (4, 3): 'Clean',
-           (0, 2): 'Clean', (1, 2): 'Clean', (2, 2): 'Clean', (3, 2): 'Clean', (4, 2): 'Clean',
-           (0, 1): 'Clean', (1, 1): 'Clean', (2, 1): 'Clean', (3, 1): 'Clean', (4, 1): 'Clean',
-           (0, 0): 'Clean', (1, 0): 'Clean', (2, 0): 'Clean', (3, 0): 'Clean', (4, 0): 'Clean'}
-    action_list = ['Suck', 'Left', 'Right', 'Down', 'Up']
+    env1 = {(0, 4): 'Dirty', (1, 4): 'Dirty', (2, 4): 'Dirty', (3, 4): 'Dirty', (4, 4): 'Dirty',
+            (0, 3): 'Clean', (1, 3): 'Clean', (2, 3): 'Clean', (3, 3): 'Clean', (4, 3): 'Clean',
+            (0, 2): 'Clean', (1, 2): 'Clean', (2, 2): 'Clean', (3, 2): 'Clean', (4, 2): 'Clean',
+            (0, 1): 'Clean', (1, 1): 'Clean', (2, 1): 'Clean', (3, 1): 'Clean', (4, 1): 'Clean',
+            (0, 0): 'Clean', (1, 0): 'Clean', (2, 0): 'Clean', (3, 0): 'Clean', (4, 0): 'Clean'}
 
-    graph_dict = {}
-    for x in range(0, 5):
-        for y in range(0, 5):
-            next_states = {'Suck': [(x, y)], 'Left': [(x-1, y)], 'Right': [(x+1, y)],
-                           'Down': [(x, y-1)], 'Up': [(x, y+1)]}
-            # next_states = [(x-1, y), (x+1, y), (x, y-1), (x, y+1)]
-            graph_dict[(x, y)] = {}
-            for action in action_list:
-                tx, ty = next_states[action][0]
-                if tx < 0 or tx > 4 or ty < 0 or ty > 4:
-                    del next_states[action]
-                graph_dict[(x, y)] = next_states
+    print("A* Search with heuristic 1\r\n==========================")
+    problem_with_h1 = VacuumProblem((0, 0), env1)
+    node = s.astar_search(problem_with_h1, problem_with_h1.h1, display=True)
+    print("\tPath: {}".format(node.path()))
+    print("\tActions: {}".format(node.solution()))
+    cost = []
+    for n in node.path():
+        cost.append(n.path_cost)
+    print("\tCost: {}\r\n".format(cost))
 
-    new_problem = VacuumProblem((0, 0))
-    print(s.astar_search(new_problem, new_problem.h))
-    #
-    # graph = s.Graph(graph_dict=graph_dict)
-    # problem = s.GraphProblem(initial=(0, 0), goal=True, graph=graph)
-    # print(s.astar_search(problem, problem.h))
+    env2 = {(0, 4): 'Dirty', (1, 4): 'Dirty', (2, 4): 'Dirty', (3, 4): 'Dirty', (4, 4): 'Dirty',
+            (0, 3): 'Clean', (1, 3): 'Clean', (2, 3): 'Clean', (3, 3): 'Clean', (4, 3): 'Clean',
+            (0, 2): 'Clean', (1, 2): 'Clean', (2, 2): 'Clean', (3, 2): 'Clean', (4, 2): 'Clean',
+            (0, 1): 'Clean', (1, 1): 'Clean', (2, 1): 'Clean', (3, 1): 'Clean', (4, 1): 'Clean',
+            (0, 0): 'Clean', (1, 0): 'Clean', (2, 0): 'Clean', (3, 0): 'Clean', (4, 0): 'Clean'}
+
+    print("A* Search with heuristic 2\r\n==========================")
+    problem_with_h2 = VacuumProblem((0, 0), env2)
+    node = s.astar_search(problem_with_h2, problem_with_h2.h2, display=True)
+    print("\tPath: {}".format(node.path()))
+    print("\tActions: {}\r\n".format(node.solution()))
 
 
 
