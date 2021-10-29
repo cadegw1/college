@@ -20,8 +20,6 @@ class VacuumProblem(s.Problem):
     def actions(self, state):
         x, y = state
         possible_actions = ['Suck', 'Left', 'Right', 'Down', 'Up']
-        # if self.env[state] == 'Dirty':
-        #     return ['Suck']
         if x-1 < 0:
             possible_actions.remove('Left')
         if x+1 > 4:
@@ -49,14 +47,14 @@ class VacuumProblem(s.Problem):
 
     def goal_test(self, environment):
         self.dirty_squares = self.get_dirty_squares()
-        return not self.dirty_squares
+        return not self.dirty_squares or (self.dirty_squares[0] == environment and len(self.dirty_squares) == 1)
 
-    # def path_cost(self, c, state1, action, state2):
-    #     if action == 'Suck':
-    #         c += 1 + ((len(self.dirty_squares) - 1) * 2)
-    #     elif action in ['Left', 'Right', 'Down', 'Up']:
-    #         c += 1 + (len(self.dirty_squares) * 2)
-    #     return c
+    def path_cost(self, c, state1, action, state2):
+        if action == 'Suck':
+            c += 1 + ((len(self.dirty_squares) - 1) * 2)
+        else:
+            c += 1 + (len(self.dirty_squares) * 2)      # self.get_dirty_squares()
+        return c
 
     def h1(self, node):
         x1, y1 = node.state
@@ -99,6 +97,7 @@ if __name__ == '__main__':
     print("A* Search with heuristic 1\r\n==========================")
     problem_with_h1 = VacuumProblem((0, 0), env1)
     node = s.astar_search(problem_with_h1, problem_with_h1.h1, display=True)
+    print(problem_with_h1.env)
     print("\tPath: {}".format(node.path()))
     print("\tActions: {}".format(node.solution()))
     cost = []
