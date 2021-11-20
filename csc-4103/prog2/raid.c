@@ -38,17 +38,33 @@ void create_files(int disk_amt)
     {
         sprintf(filename, "disk.%d", i);
         disk[i] = fopen(filename, "w+");
-        fprintf(disk[i], "bruh");
         fclose(disk[i]);
     }
 }
+
+void write(void)
+{
+
+}
+
+void read(void)
+{
+
+}
+
+void rebuild(void)
+{
+
+}
+
+enum cmd{NUM_DISK = 1, BLOCK_SIZE = 2, COMMAND = 3, INPUT = 4};
 
 int main(int argc, char *argv[])
 {
     int num_disks = 0;
     int block_size = 0;
     char * command = "";
-    char * file_name = "";
+    char * input = "";
 
     // Retrieve command line arguments
     if(argc != 5)
@@ -57,14 +73,26 @@ int main(int argc, char *argv[])
     }
     else
     {
-        num_disks = atoi(argv[1]);
-        block_size = atoi(argv[2]);
-        command = argv[3];
-        file_name = argv[4];
+        num_disks = atoi(argv[NUM_DISK]);
+        block_size = atoi(argv[BLOCK_SIZE]);
+        command = argv[COMMAND];
+        input = argv[INPUT];
     }
 
     clean_dir();
-    // create_files(num_disks);
+    create_files(num_disks);
+    if(argv[COMMAND] == "write")
+    {
+        write();
+    }
+    else if(argv[COMMAND] == "read")
+    {
+        read();
+    }
+    else if(argv[COMMAND] == "rebuild")
+    {
+        rebuild();
+    }
 
     return 0;
 }
