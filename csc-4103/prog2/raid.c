@@ -58,13 +58,78 @@ void write(int disk_amt, int block_size, char * input)
     char filename[FILENAME_MAX];
 
     // Add way to know when to skip writing to calculate parity block
-    int i = 0;
-    while((fgets(buff, block_size + 1, input_data)) != NULL)
+    int parity_disk = disk_amt - 1;
+    while((fgets(buff, (block_size + 1) * (disk_amt - 2), input_data)) != NULL)
     {
-        sprintf(filename, "disk.%d", i);
-        disk[i] = fopen(filename, "w");
-        // fprintf(disk);
-        fclose(disk[i]);
+        // Pads data with zeros if it does not fit
+        char zeros[BUFFER_SIZE] = {'0'};
+        if(strlen(buff) != block_size * (disk_amt - 1))
+        {
+            int diff = (block_size * (disk_amt - 1)) - strlen(buff);
+            strncat(buff, zeros, diff);
+        }
+
+        // Write data into data disks
+        int disks_accessed = 0;
+        for(int j = 0; j < disk_amt - 1; j++)
+        {
+            if(j != parity_disk)
+            {
+                sprintf(filename, "disk.%d", j);
+                disk[j] = fopen(filename, "w");
+                fprintf(disk[j], "%.*s", block_size, buff + (block_size * disks_accessed));
+                fclose(disk[j]);
+                disks_accessed++;
+            }
+
+            // On final iteration, calculate parity data
+            if(j == disk_amt - 2)
+            {
+                char parity_data[BUFFER_SIZE];
+                for(int curr_disk = 0; curr_disk < disk_amt - 2; curr_disk++)
+                {
+                    if(curr_disk == parity_disk)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        bool first = true;
+                        char temp;
+                        for(int ch = 0; ch < block_size; ch++)
+                        {
+                            if(first)
+                            {
+                                temp = buff[ch + (curr_disk * block_size)] ^ buff[ch + ((curr_disk + 1) * block_size)];
+                                parity_data[ch] = temp;
+                                first = false;
+                                curr_disk++;
+                            }
+                            else
+                            {
+                                temp = parity_data[ch] ^ buff[ch + (curr_disk * block_size)];
+                                parity_data[ch] = temp;
+                            }   
+                        }
+                    }
+                }
+
+                // Write parity data to parity disk
+                FILE *pdisk;
+                sprintf(filename, "disk.%d", parity_disk);
+                pdisk = fopen(filename, "w");
+                fprintf(pdisk, "%s", parity_data);
+            }
+        }
+
+        if(parity_disk == 0)
+        {
+            parity_disk = disk_amt - 1;
+        }
+        else
+        {
+            parity_disk--;
+        }
     }
     fclose(input_data);
 }
