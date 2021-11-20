@@ -14,17 +14,12 @@ bool create_files(int disk_amt)
 {
     // Create files
     FILE *disk[disk_amt];
-    char * filename = "";
+    char filename[100];
     for(int i = 0; i < disk_amt; i++)
     {
-        sprintf(filename, "%d", i);
-        disk[i] = fopen(strcat("disk.", filename), "w+");
-    }
-
-
-    // Close files
-    for(int i = 0; i < disk_amt; i++)
-    {
+        sprintf(filename, "disk.%d", i);
+        disk[i] = fopen(filename, "w+");
+        fprintf(disk[i], "bruh");
         fclose(disk[i]);
     }
 
@@ -33,6 +28,7 @@ bool create_files(int disk_amt)
 
 int main(int argc, char *argv[])
 {
+    printf("start");
     int num_disks = 0;
     int block_size = 0;
     char * command = "";
@@ -41,7 +37,7 @@ int main(int argc, char *argv[])
     // Retrieve command line arguments
     if(argc != 5)
     {
-        printf("ERROR: Incorrect number of inputs");
+        printf("ERROR: Four arguments expected");
     }
     else
     {
@@ -51,7 +47,7 @@ int main(int argc, char *argv[])
         file_name = argv[4];
     }
 
-    printf("%d %d %s %s\r\n\r\n", num_disks, block_size, command, file_name);
+    create_files(num_disks);
 
     return 0;
 }
