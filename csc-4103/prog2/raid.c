@@ -10,11 +10,30 @@
 #include <stdbool.h>
 #include <string.h>
 
-bool create_files(int disk_amt)
+#define FILENAME_SIZE       100
+
+// Function removes old disk files in the current directory 
+void clean_dir(void)
+{
+    FILE *old_disk;
+    int i = 0;
+    char filename[FILENAME_SIZE];
+    sprintf(filename, "disk.%d", i++);
+    while(old_disk = fopen(filename, "r"))
+    {
+        fclose(old_disk);
+        remove(filename);
+        sprintf(filename, "disk.%d", i++);
+    } 
+    printf("Removed old disk files\r\n");
+}
+
+// Creates all necessary files
+void create_files(int disk_amt)
 {
     // Create files
     FILE *disk[disk_amt];
-    char filename[100];
+    char filename[FILENAME_SIZE];
     for(int i = 0; i < disk_amt; i++)
     {
         sprintf(filename, "disk.%d", i);
@@ -22,13 +41,10 @@ bool create_files(int disk_amt)
         fprintf(disk[i], "bruh");
         fclose(disk[i]);
     }
-
-    return true;
 }
 
 int main(int argc, char *argv[])
 {
-    printf("start");
     int num_disks = 0;
     int block_size = 0;
     char * command = "";
@@ -47,7 +63,8 @@ int main(int argc, char *argv[])
         file_name = argv[4];
     }
 
-    create_files(num_disks);
+    clean_dir();
+    // create_files(num_disks);
 
     return 0;
 }
