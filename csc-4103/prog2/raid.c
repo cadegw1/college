@@ -7,6 +7,29 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+
+bool create_files(int disk_amt)
+{
+    // Create files
+    FILE *disk[disk_amt];
+    char * filename = "";
+    for(int i = 0; i < disk_amt; i++)
+    {
+        sprintf(filename, "%d", i);
+        disk[i] = fopen(strcat("disk.", filename), "w+");
+    }
+
+
+    // Close files
+    for(int i = 0; i < disk_amt; i++)
+    {
+        fclose(disk[i]);
+    }
+
+    return true;
+}
 
 int main(int argc, char *argv[])
 {
@@ -14,6 +37,8 @@ int main(int argc, char *argv[])
     int block_size = 0;
     char * command = "";
     char * file_name = "";
+
+    // Retrieve command line arguments
     if(argc != 5)
     {
         printf("ERROR: Incorrect number of inputs");
@@ -26,7 +51,7 @@ int main(int argc, char *argv[])
         file_name = argv[4];
     }
 
-    printf("%d %d %s %s", num_disks, block_size, command, file_name);
+    printf("%d %d %s %s\r\n\r\n", num_disks, block_size, command, file_name);
 
     return 0;
 }
