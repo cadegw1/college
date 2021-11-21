@@ -238,7 +238,6 @@ int main(int argc, char *argv[])
         
         if(strcmp(command, "write") == 0)
         {
-            // create_files(num_disks);
             clean_dir();
             write(num_disks, block_size, file);
         }
