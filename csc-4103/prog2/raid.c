@@ -25,6 +25,8 @@ void clean_dir(void)
         remove(filename);
         sprintf(filename, "disk.%d", i++);
     } 
+    remove("output");
+
     if(i != 1)
     {
         printf("Removed old disk files ...\r\n");
@@ -136,9 +138,45 @@ void write(int const disk_amt, int const block_size, char * input)
     fclose(input_data);
 }
 
-void read(char * output)
+void read(int const disk_amt, int const block_size, char * output)
 {
+    FILE *disk[disk_amt];
+    char buff[BUFFER_SIZE];
+    char filename[FILENAME_MAX];
 
+    // Open files
+    for(int i = 0; i < disk_amt; i++)
+    {
+        sprintf(filename, "disk.%d", i);
+        disk[i] = fopen(filename, "r");
+    }
+    FILE *out;
+    out = fopen("output", "w");
+
+    // Read all data from disks and write to output file
+    int i = 0;
+    int parity_disk = disk_amt - 1;
+    while((fgets(buff, block_size + 4, disk[i]) != NULL))
+    {
+        fprintf(out, "%s", buff);
+        i = (i + 1) % disk_amt;
+        if(i == parity_disk)
+        {
+            i = (i + 1) % disk_amt;
+            parity_disk = parity_disk - 1;
+            if(parity_disk == -1)
+            {
+                parity_disk = disk_amt - 1;
+            }
+        }
+    }
+    
+    // Close all files
+    fclose(out);
+    for(int j = 0; j < disk_amt; j++)
+    {
+        fclose(disk[j]);
+    }
 }
 
 void rebuild(char * disk)
@@ -154,7 +192,6 @@ int main(int argc, char *argv[])
     char * file = "";
 
     // Retrieve command line arguments
-    clean_dir();
     if(argc != 5)
     {
         printf("ERROR: Four arguments expected\r\n");
@@ -165,15 +202,16 @@ int main(int argc, char *argv[])
         block_size = atoi(argv[2]);
         command = argv[3];
         file = argv[4];
-
-        create_files(num_disks);
+        
         if(strcmp(command, "write") == 0)
         {
+            // create_files(num_disks);
+            clean_dir();
             write(num_disks, block_size, file);
         }
         else if(strcmp(command, "read") == 0)
         {
-            read(file);
+            read(num_disks, block_size, file);
         }
         else if(strcmp(command, "rebuild") == 0)
         {
