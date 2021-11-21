@@ -62,13 +62,13 @@ void write(int const disk_amt, int const block_size, char * input)
     while((fgets(buff, ((block_size) * (disk_amt - 1)) + 1, input_data)) != NULL)
     {
         // Pads data with zeros if it does not fit
-        char zeros[block_size + 1];
+        char zeros[block_size * (disk_amt - 1)];
         if(strlen(buff) != block_size * (disk_amt - 1))
         {
-            for(int p = 0; p <= block_size; p++)
+            for(int p = 0; p <= block_size * (disk_amt - 1); p++)
             {
                 zeros[p] = '0';
-                if(p == block_size)
+                if(p == block_size * (disk_amt - 1))
                 {
                     zeros[p] = '\0';
                 }
@@ -109,7 +109,7 @@ void write(int const disk_amt, int const block_size, char * input)
                         for(int ch = 0; ch < block_size; ch++)
                         {
                             temp = parity_data[ch] ^ buff[ch + (disks_accessed * block_size)];
-                            parity_data[ch] = temp;    
+                            parity_data[ch] = (char)temp;    
                         }
                     }
                     disks_accessed++;
