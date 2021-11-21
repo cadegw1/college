@@ -29,22 +29,7 @@ void clean_dir(void)
 
     if(i != 1)
     {
-        printf("Removed old disk files ...\r\n");
-    }
-}
-    
-
-// Creates all necessary files
-void create_files(int const disk_amt)
-{
-    // Create files
-    FILE *disk[disk_amt];
-    char filename[FILENAME_MAX];
-    for(int i = 0; i < disk_amt; i++)
-    {
-        sprintf(filename, "disk.%d", i);
-        disk[i] = fopen(filename, "w+");
-        fclose(disk[i]);
+        printf("Removed old disk files\r\n");
     }
 }
 
@@ -136,22 +121,23 @@ void write(int const disk_amt, int const block_size, char * input)
         }
     }
     fclose(input_data);
+    printf("Wrote to disks\r\n");
 }
 
 void read(int const disk_amt, int const block_size, char * output)
 {
-    FILE *disk[disk_amt];
     char buff[BUFFER_SIZE];
     char filename[FILENAME_MAX];
 
     // Open files
+    FILE *disk[disk_amt];
     for(int i = 0; i < disk_amt; i++)
     {
         sprintf(filename, "disk.%d", i);
         disk[i] = fopen(filename, "r");
     }
     FILE *out;
-    out = fopen("output", "w");
+    out = fopen(output, "w");
 
     // Read all data from disks and write to output file
     int i = 0;
@@ -177,11 +163,58 @@ void read(int const disk_amt, int const block_size, char * output)
     {
         fclose(disk[j]);
     }
+    printf("Data read to: %s\r\n", output);
 }
 
-void rebuild(char * disk)
+void rebuild(int const disk_amt, int const block_size, char * rebuild_disk)
 {
+    remove(rebuild_disk);
+    char filename[FILENAME_MAX];
+    int num_rdisk = atoi(rebuild_disk + 5);
+    char buff[BUFFER_SIZE];
 
+    // Open files
+    FILE *disk[disk_amt];
+    for(int i = 0; i < disk_amt; i++)
+    {
+        sprintf(filename, "disk.%d", i);
+        if(i != num_rdisk)
+        {
+            disk[i] = fopen(filename, "r");
+        }
+        else
+        {
+            disk[num_rdisk] = fopen(filename, "a");
+        }
+    }
+
+    // Read all data from disks and write to output file
+    int i = 0;
+    char result[BUFFER_SIZE] = {0};
+    while((fgets(buff, block_size + 4, disk[i]) != NULL))
+    {
+        char temp;
+        for(int ch = 0; ch < block_size; ch++)
+        {
+            temp = result[ch] ^ buff[ch];
+            result[ch] = (char)temp;    
+        }
+
+        i = (i + 1) % disk_amt;
+        if(i == num_rdisk)
+        {
+            fprintf(disk[num_rdisk], "%s\r\n", result);
+            memset(result, 0, sizeof(result));
+            i = (i + 1) % disk_amt;
+        }
+    }
+
+    // Close all files
+    for(int j = 0; j < disk_amt; j++)
+    {
+        fclose(disk[j]);
+    }
+    printf("Rebuilt %s\r\n", rebuild_disk);
 }
 
 int main(int argc, char *argv[])
@@ -215,7 +248,14 @@ int main(int argc, char *argv[])
         }
         else if(strcmp(command, "rebuild") == 0)
         {
-            rebuild(file);
+            if(strncmp(file, "disk", 4) != 0)
+            {
+                printf("Invalid file: %s\r\n", file);
+            }
+            else
+            {
+                rebuild(num_disks, block_size, file);
+            }
         }
     }
 
