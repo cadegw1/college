@@ -33,7 +33,7 @@ void clean_dir(void)
     
 
 // Creates all necessary files
-void create_files(int disk_amt)
+void create_files(int const disk_amt)
 {
     // Create files
     FILE *disk[disk_amt];
@@ -46,7 +46,7 @@ void create_files(int disk_amt)
     }
 }
 
-void write(int disk_amt, int block_size, char * input)
+void write(int const disk_amt, int const block_size, char * input)
 {
     // Initialize input data file
     char buff[BUFFER_SIZE];
@@ -85,10 +85,11 @@ void write(int disk_amt, int block_size, char * input)
             }
 
             // On final iteration, calculate parity data
+            char parity_data[BUFFER_SIZE] = {0};
             if(j == disk_amt - 1)
             {
-                char parity_data[BUFFER_SIZE];
-                for(int curr_disk = 0; curr_disk < disk_amt - 1; curr_disk++)
+                disks_accessed = 0;
+                for(int curr_disk = 0; curr_disk < disk_amt; curr_disk++)
                 {
                     if(curr_disk == parity_disk)
                     {
@@ -96,24 +97,14 @@ void write(int disk_amt, int block_size, char * input)
                     }
                     else
                     {
-                        bool first = true;
                         char temp;
                         for(int ch = 0; ch < block_size; ch++)
                         {
-                            if(first)
-                            {
-                                temp = buff[ch + (curr_disk * block_size)] ^ buff[ch + ((curr_disk + 1) * block_size)];
-                                parity_data[ch] = temp;
-                                first = false;
-                                curr_disk++;
-                            }
-                            else
-                            {
-                                temp = parity_data[ch] ^ buff[ch + (curr_disk * block_size)];
-                                parity_data[ch] = temp;
-                            }   
+                            temp = parity_data[ch] ^ buff[ch + (disks_accessed * block_size)];
+                            parity_data[ch] = temp;    
                         }
                     }
+                    disks_accessed++;
                 }
 
                 // Write parity data to parity disk
