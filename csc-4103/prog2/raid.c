@@ -62,23 +62,31 @@ void write(int const disk_amt, int const block_size, char * input)
     while((fgets(buff, ((block_size) * (disk_amt - 1)) + 1, input_data)) != NULL)
     {
         // Pads data with zeros if it does not fit
-        char zeros[BUFFER_SIZE] = {'0'};
+        char zeros[block_size + 1];
         if(strlen(buff) != block_size * (disk_amt - 1))
         {
+            for(int p = 0; p <= block_size; p++)
+            {
+                zeros[p] = '0';
+                if(p == block_size)
+                {
+                    zeros[p] = '\0';
+                }
+            }
             int diff = (block_size * (disk_amt - 1)) - strlen(buff);
-            strncat(buff, zeros, diff);
+            strcat(buff, zeros);
         }
 
         // Write data into data disks
         int disks_accessed = 0;
-        char disk_data[block_size];
+        char disk_data[BUFFER_SIZE];
         for(int j = 0; j < disk_amt; j++)
         {
             if(j != parity_disk)
             {
                 sprintf(filename, "disk.%d", j);
                 disk[j] = fopen(filename, "a");
-                memcpy(disk_data, buff + (block_size * disks_accessed), block_size - 1);
+                memcpy(disk_data, buff + (block_size * disks_accessed), block_size);
                 fprintf(disk[j], "%s\r\n", disk_data);
                 fclose(disk[j]);
                 disks_accessed++;
