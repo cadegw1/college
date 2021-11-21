@@ -188,28 +188,27 @@ void rebuild(int const disk_amt, int const block_size, char * rebuild_disk)
         }
     }
 
-    // Read all data from disks and write to output file
+    // XOR data blocks from member disks
     int i = num_rdisk == 0 ? 1 : 0;
     char result[BUFFER_SIZE] = {0};
-    while((fgets(buff, block_size + 4, disk[i]) != NULL))
+    while((fgets(buff, block_size + 4, disk[i]) != NULL) || i == num_rdisk)
     {
-        char temp;
-        for(int ch = 0; ch < block_size; ch++)
+        if(i != num_rdisk)
         {
-            temp = result[ch] ^ buff[ch];
-            result[ch] = (char)temp;    
+            char temp;
+            for(int ch = 0; ch < block_size; ch++)
+            {
+                temp = result[ch] ^ buff[ch];
+                result[ch] = (char)temp;    
+            }
         }
-
+        
         if(i == disk_amt - 1)
         {
             fprintf(disk[num_rdisk], "%s\r\n", result);
             memset(result, 0, sizeof(result));
         }
         i = (i + 1) % disk_amt;
-        if(i == num_rdisk)
-        {
-            i = (i + 1) % disk_amt;
-        }
     }
 
     // Close all files
