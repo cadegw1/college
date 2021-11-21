@@ -189,7 +189,7 @@ void rebuild(int const disk_amt, int const block_size, char * rebuild_disk)
     }
 
     // Read all data from disks and write to output file
-    int i = 0;
+    int i = num_rdisk == 0 ? 1 : 0;
     char result[BUFFER_SIZE] = {0};
     while((fgets(buff, block_size + 4, disk[i]) != NULL))
     {
@@ -200,11 +200,14 @@ void rebuild(int const disk_amt, int const block_size, char * rebuild_disk)
             result[ch] = (char)temp;    
         }
 
-        i = (i + 1) % disk_amt;
-        if(i == num_rdisk)
+        if(i == disk_amt - 1)
         {
             fprintf(disk[num_rdisk], "%s\r\n", result);
             memset(result, 0, sizeof(result));
+        }
+        i = (i + 1) % disk_amt;
+        if(i == num_rdisk)
+        {
             i = (i + 1) % disk_amt;
         }
     }
@@ -247,7 +250,7 @@ int main(int argc, char *argv[])
         }
         else if(strcmp(command, "rebuild") == 0)
         {
-            if(strncmp(file, "disk", 4) != 0)
+            if(strncmp(file, "disk", 4) != 0 || atoi(file + 5) > num_disks - 1)
             {
                 printf("Invalid file: %s\r\n", file);
             }
