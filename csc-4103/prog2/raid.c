@@ -25,7 +25,6 @@ void clean_dir(void)
         remove(filename);
         sprintf(filename, "disk.%d", i++);
     } 
-    remove("output");
 
     if(i != 1)
     {
@@ -144,17 +143,20 @@ void read(int const disk_amt, int const block_size, char * output)
     int parity_disk = disk_amt - 1;
     while((fgets(buff, block_size + 4, disk[i]) != NULL))
     {
-        fprintf(out, "%s", buff);
-        i = (i + 1) % disk_amt;
-        if(i == parity_disk)
+        if(parity_disk == -1 && i == 0)
         {
-            i = (i + 1) % disk_amt;
-            parity_disk = parity_disk - 1;
-            if(parity_disk == -1)
-            {
-                parity_disk = disk_amt - 1;
-            }
+            parity_disk = disk_amt - 1;
         }
+
+        if(i != parity_disk)
+        {
+            fprintf(out, "%s", buff);
+        }
+        else
+        {
+            parity_disk = parity_disk - 1;
+        }
+        i = (i + 1) % disk_amt;
     }
     
     // Close all files
